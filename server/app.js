@@ -1,12 +1,10 @@
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
 const dotenv = require('dotenv');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const { z } = require('zod');
 
-// Load environment variables
-dotenv.config({ path: path.resolve(__dirname, '../.env.local') });
+// Load environment variables (Vercel injects these automatically)
 dotenv.config();
 
 const app = express();
@@ -160,9 +158,3 @@ app.use((err, _req, res, _next) => {
 
 console.log("Server app loaded successfully");
 module.exports = app;
-
-// NOTE: DO NOT APP.LISTEN ON VERCEL. This only runs locally.
-if (process.env.VERCEL === undefined) {
-  const port = Number(process.env.PORT || 3001);
-  app.listen(port, () => console.log(`Soth Link API running on http://localhost:${port}`));
-}
