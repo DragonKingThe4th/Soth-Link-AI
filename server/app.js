@@ -1,4 +1,6 @@
-console.log("Starting server app...");
+const express = require('express');
+const cors = require('cors');
+// ... import any other libraries you use there similarly (e.g., const dotenv = require('dotenv'))
 import express from 'express'; import cors from 'cors'; import dotenv from 'dotenv'; import {GoogleGenerativeAI} from '@google/generative-ai'; import {z} from 'zod';
 dotenv.config({path:'.env.local'}); dotenv.config();
 const app=express(); app.use(cors()); app.use(express.json({limit:'256kb'}));
@@ -17,5 +19,5 @@ app.post('/api/agents/analyze-all',async(req,res)=>{try{const p=Body.parse(req.b
 for(const [path,type,title] of [['/api/agents/wisdom','wisdom','Wisdom'],['/api/agents/story','story','Story'],['/api/agents/impact','impact','Impact'],['/api/agents/timeline','timeline','Timeline'],['/api/agents/topic','topic','Topic'],['/api/agents/letter','letter','Letter']] as const){app.post(path,async(req,res)=>{req.body=req.body||{};return jsonReply(res,{type,title,content:'Use /api/agents/analyze-all for the combined grounded analysis.'})})}
 app.use((err:unknown,_req:express.Request,res:express.Response,_next:express.NextFunction)=>{console.error('request error',err instanceof Error?err.message:'unknown');jsonReply(res,{error:'Unexpected server error.'},500)});
 console.log("Server app loaded successfully");
-export default app;
+module.exports = app;
 if(process.env.VERCEL===undefined){const port=Number(process.env.PORT||3001);app.listen(port,()=>console.log(`Soth Link API running on http://localhost:${port}`));}
