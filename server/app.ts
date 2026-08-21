@@ -1,3 +1,4 @@
+console.log("Starting server app...");
 import express from 'express'; import cors from 'cors'; import dotenv from 'dotenv'; import {GoogleGenerativeAI} from '@google/generative-ai'; import {z} from 'zod';
 dotenv.config({path:'.env.local'}); dotenv.config();
 const app=express(); app.use(cors()); app.use(express.json({limit:'256kb'}));
@@ -15,5 +16,6 @@ app.post('/api/summarize-capsule',async(req,res)=>{try{const p=Body.extend({tone
 app.post('/api/agents/analyze-all',async(req,res)=>{try{const p=Body.parse(req.body);const m=model();if(!m)return jsonReply(res,{insights:[{type:'Wisdom themes',title:'A record worth growing',content:'Add a few more memories to reveal recurring values and themes.'}]});const r=await m.generateContent(`Analyze this digital legacy archive. Return ONLY JSON: {"insights":[{"type":"string","title":"string","content":"string"}]} with 5 concise cards covering wisdom themes, turning points, emotional patterns, relationship/cultural values, and timeline/topic summary. Use ONLY recorded entries; do not invent facts. RECORD:\n${context(p.capsule)}`);const raw=r.response.text().replace(/```json|```/g,'').trim();return jsonReply(res,JSON.parse(raw))}catch{return jsonReply(res,{error:'Could not analyze this capsule right now.'},400)}});
 for(const [path,type,title] of [['/api/agents/wisdom','wisdom','Wisdom'],['/api/agents/story','story','Story'],['/api/agents/impact','impact','Impact'],['/api/agents/timeline','timeline','Timeline'],['/api/agents/topic','topic','Topic'],['/api/agents/letter','letter','Letter']] as const){app.post(path,async(req,res)=>{req.body=req.body||{};return jsonReply(res,{type,title,content:'Use /api/agents/analyze-all for the combined grounded analysis.'})})}
 app.use((err:unknown,_req:express.Request,res:express.Response,_next:express.NextFunction)=>{console.error('request error',err instanceof Error?err.message:'unknown');jsonReply(res,{error:'Unexpected server error.'},500)});
+console.log("Server app loaded successfully");
 export default app;
 if(process.env.VERCEL===undefined){const port=Number(process.env.PORT||3001);app.listen(port,()=>console.log(`Soth Link API running on http://localhost:${port}`));}
