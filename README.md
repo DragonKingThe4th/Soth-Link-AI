@@ -89,9 +89,9 @@ soth-link-ai/
 ```
 
 ## Links
-- Live demo: `[https://YOUR-VERCEL-URL.vercel.app](https://soth-link-ai.vercel.app/)`
-- GitHub: `https://github.com/DragonKingThe4th/soth-link-ai`
-- Demo video: `https://YOUR-VIDEO-URL`
+- Live demo: https://soth-link-ai.vercel.app/
+- GitHub: https://github.com/DragonKingThe4th/soth-link-ai
+- Demo video: https://www.youtube.com/watch?v=yCpUfCvc-vY
 
 ## License
 MIT — see `LICENSE`.
