@@ -4,14 +4,12 @@ const dotenv = require('dotenv');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const { z } = require('zod');
 
-// Load environment variables (Vercel injects these automatically)
 dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '256kb' }));
 
-// Zod Schemas
 const Entry = z.object({
   id: z.string(),
   category: z.string(),
@@ -36,7 +34,6 @@ const Capsule = z.object({
 
 const Body = z.object({ capsule: Capsule });
 
-// Model configuration
 const model = () => {
   const key = process.env.GEMINI_API_KEY;
   if (!key) return null;
@@ -66,11 +63,7 @@ app.post('/api/chat', async (req, res) => {
     const r = await m.generateContent(prompt);
     const raw = r.response.text().replace(/```json|```/g, '').trim();
     let data;
-    try {
-      data = JSON.parse(raw);
-    } catch {
-      data = { text: raw, citedIds: [] };
-    }
+    try { data = JSON.parse(raw); } catch { data = { text: raw, citedIds: [] }; }
     return jsonReply(res, data);
   } catch (e) {
     return jsonReply(res, { error: e instanceof z.ZodError ? 'Please provide a valid capsule and question.' : 'The legacy chat could not respond right now.' }, 400);
