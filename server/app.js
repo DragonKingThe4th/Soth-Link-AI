@@ -44,10 +44,8 @@ const context = (c) => c.entries.map(e => `MEMORY ID: ${e.id}\nCATEGORY: ${e.cat
 
 const jsonReply = (res, data, status = 200) => res.status(status).json(data);
 
-// Health Check
 app.get('/api/health', (_req, res) => jsonReply(res, { ok: true, service: 'soth-link-ai' }));
 
-// Chat Route
 app.post('/api/chat', async (req, res) => {
   try {
     const p = Body.extend({
@@ -70,7 +68,6 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
-// Generate Interview Question
 app.post('/api/generate-interview-question', async (req, res) => {
   try {
     const p = Body.extend({ category: z.string() }).parse(req.body);
@@ -84,7 +81,6 @@ app.post('/api/generate-interview-question', async (req, res) => {
   }
 });
 
-// Suggest Prompts
 app.post('/api/suggest-prompts', async (req, res) => {
   try {
     const p = Body.extend({ category: z.string() }).parse(req.body);
@@ -99,7 +95,6 @@ app.post('/api/suggest-prompts', async (req, res) => {
   }
 });
 
-// Summarize Capsule
 app.post('/api/summarize-capsule', async (req, res) => {
   try {
     const p = Body.extend({ tone: z.string().default('Heartfelt') }).parse(req.body);
@@ -113,7 +108,6 @@ app.post('/api/summarize-capsule', async (req, res) => {
   }
 });
 
-// Analyze All Agents
 app.post('/api/agents/analyze-all', async (req, res) => {
   try {
     const p = Body.parse(req.body);
@@ -128,7 +122,6 @@ app.post('/api/agents/analyze-all', async (req, res) => {
   }
 });
 
-// Specific Agent Routes
 for (const [path, type, title] of [
   ['/api/agents/wisdom', 'wisdom', 'Wisdom'],
   ['/api/agents/story', 'story', 'Story'],
@@ -143,7 +136,6 @@ for (const [path, type, title] of [
   });
 }
 
-// Global Error Handler
 app.use((err, _req, res, _next) => {
   console.error('request error', err instanceof Error ? err.message : 'unknown');
   jsonReply(res, { error: 'Unexpected server error.' }, 500);
