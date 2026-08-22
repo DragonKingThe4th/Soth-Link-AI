@@ -10,29 +10,33 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '256kb' }));
 
+// --- UPDATED FLEXIBLE SCHEMAS ---
 const Entry = z.object({
-  id: z.string(),
-  category: z.string(),
-  prompt: z.string(),
-  response: z.string(),
+  id: z.string().optional(),
+  category: z.string().optional(),
+  prompt: z.string().optional(),
+  response: z.string().optional(),
   yearOrEra: z.string().optional(),
-  tags: z.array(z.string()),
+  tags: z.array(z.string()).optional(),
   notes: z.string().optional(),
-  createdAt: z.string(),
-  updatedAt: z.string()
+  createdAt: z.string().optional(),
+  updatedAt: z.string().optional()
 });
 
 const Capsule = z.object({
   id: z.string(),
-  title: z.string(),
-  authorName: z.string(),
+  title: z.string().optional(),
+  authorName: z.string().optional(),
   birthYear: z.string().optional(),
-  createdFor: z.string(),
+  createdFor: z.string().optional(),
   description: z.string().optional(),
-  entries: z.array(Entry)
+  entries: z.array(Entry).optional()
 });
 
-const Body = z.object({ capsule: Capsule });
+const Body = z.object({ 
+  capsule: Capsule
+});
+// --------------------------------
 
 const model = () => {
   const key = process.env.GEMINI_API_KEY;
@@ -40,7 +44,8 @@ const model = () => {
   return new GoogleGenerativeAI(key).getGenerativeModel({ model: 'gemini-2.5-flash' });
 };
 
-const context = (c) => c.entries.map(e => `MEMORY ID: ${e.id}\nCATEGORY: ${e.category}\nPROMPT: ${e.prompt}\nRESPONSE: ${e.response}\nERA: ${e.yearOrEra || 'not provided'}\nTAGS: ${e.tags.join(', ')}`).join('\n\n');
+// Handle entries being undefined safely
+const context = (c) => (c.entries || []).map(e => `MEMORY ID: ${e.id}\nCATEGORY: ${e.category}\nPROMPT: ${e.prompt}\nRESPONSE: ${e.response}\nERA: ${e.yearOrEra || 'not provided'}\nTAGS: ${(e.tags || []).join(', ')}`).join('\n\n');
 
 const jsonReply = (res, data, status = 200) => res.status(status).json(data);
 
@@ -111,14 +116,19 @@ app.post('/api/summarize-capsule', async (req, res) => {
 app.post('/api/agents/analyze-all', async (req, res) => {
   try {
     const p = Body.parse(req.body);
+    
+    // If your frontend is only sending the ID, you would fetch the full capsule here from your database.
+    // For now, we just parse the structure.
+
     const m = model();
     if (!m) return jsonReply(res, { insights: [{ type: 'Wisdom themes', title: 'A record worth growing', content: 'Add a few more memories to reveal recurring values and themes.' }] });
     
     const r = await m.generateContent(`Analyze this digital legacy archive. Return ONLY JSON: {"insights":[{"type":"string","title":"string","content":"string"}]} with 5 concise cards covering wisdom themes, turning points, emotional patterns, relationship/cultural values, and timeline/topic summary. Use ONLY recorded entries; do not invent facts. RECORD:\n${context(p.capsule)}`);
     const raw = r.response.text().replace(/```json|```/g, '').trim();
     return jsonReply(res, JSON.parse(raw));
-  } catch {
-    return jsonReply(res, { error: 'Could not analyze this capsule right now.' }, 400);
+  } catch (e) {
+    console.error("ANALYZE ALL ERROR:", e);
+    return jsonReply(res, { error: e.message || 'Could not analyze this capsule right now.' }, 400);
   }
 });
 
