@@ -2,7 +2,6 @@
   "name": "soth-link-ai",
   "private": true,
   "version": "1.0.0",
-  "type": "module",
   "scripts": {
     "dev": "concurrently \"vite\" \"tsx watch server/app.ts\"",
     "build": "tsc -b && vite build",
