@@ -47,6 +47,6 @@ Soth Link AI is designed around preservation rather than productivity. Its goal 
 - Consent, retention, and deletion controls for collaborative family archives
 
 ## URLs
-- Live demo: `https://YOUR-VERCEL-URL.vercel.app`
-- GitHub: `https://github.com/YOUR-USERNAME/soth-link-ai`
-- Video: `https://YOUR-VIDEO-URL`
+- Live demo: https://soth-link-ai.vercel.app
+- GitHub: https://github.com/DragonKingThe4th/soth-link-ai
+- Video: https://www.youtube.com/watch?v=yCpUfCvc-vY&t=6s
